@@ -8,18 +8,25 @@ const app = express(); //Creates an Express application instance, which is the m
 const API_KEY = process.env.API_KEY; // Accessing the API key from the environment variables
 // const catfactUrl = process.env.CAT_FACT_BASE_URL;
 
-//Applies the CORS middleware to the app, allowing requests from the specified origin (http://localhost:3001). 
+//Applies the CORS middleware to the app, allowing requests from the specified origin (http://localhost:3001).
 //This enables the frontend (running on a different port) to communicate with this server.
 app.use(
   cors({
-    origin: "http://localhost:3001", // Replace with your frontend's origin
+    origin: [
+      "http://localhost:3001",
+      "https://react-backend-deploy.onrender.com",
+      "https://react-frontend-deploy.onrender.com",
+    ], // Replace with your frontend's origin
   })
 );
 
-app.get("/api/data", async (req, res) => { //Defines a route handler for GET requests to the /api/data endpoint. This function is asynchronous, allowing the use of await to handle asynchronous operations.
+app.get("/api/data", async (req, res) => {
+  //Defines a route handler for GET requests to the /api/data endpoint. This function is asynchronous, allowing the use of await to handle asynchronous operations.
   const { month } = req.query; //Extracts the month query parameter from the incoming request URL, which specifies the month of data to retrieve from the external API.
-    const response = await fetch(`https://api.nytimes.com/svc/archive/v1/2024/${month}.json?api-key=${API_KEY}`);
-//   const response = await fetch(catfactUrl);
+  const response = await fetch(
+    `https://api.nytimes.com/svc/archive/v1/2024/${month}.json?api-key=${API_KEY}`
+  );
+  //   const response = await fetch(catfactUrl);
   const data = await response.json();
   res.json(data); //Sends the JSON data back to the client as the response to the original GET request.
 });
